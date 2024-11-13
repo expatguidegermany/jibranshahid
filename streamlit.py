@@ -29,8 +29,8 @@ from typing_extensions import override
 google_sheets_spreadsheet_id = '1nE8Mg0R3QX_GIZbYJv_3wSdZ6QsxJlMGfDaJ3t_IBgU'
 google_sheets_range_name = 'A1:C'
 
-# Initialize the ExcelData class for Google Sheets
-excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
+# # Initialize the ExcelData class for Google Sheets
+# excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
 
 
 
@@ -88,21 +88,6 @@ def add_hyperlinks(message):
     return message
 
     # Print the modified message
-
-
-# Function to add timestamp and thread ID to Google Sheets
-def add_timestamp_and_thread_id_to_google_sheets(excel_data, thread_id, prompt):
-
-    # Get the current timestamp
-    current_time = time.strftime("%Y-%m-%d %H:%M:%S")
-
-    # Create a list with data to append to Google Sheets
-    data_to_append = [[current_time, thread_id, prompt]]
-
-    # Append the data to Google Sheets
-    excel_data.append_values(google_sheets_spreadsheet_id, google_sheets_range_name, "USER_ENTERED", data_to_append)
-
-
 
 
 
@@ -289,7 +274,6 @@ if prompt := st.chat_input("My name is Jibran, What you want to know me?"):
         thread_id = st.session_state.thread.id
 
         # Add the current timestamp and thread ID to the Google Sheets
-        add_timestamp_and_thread_id_to_google_sheets(excel_data, thread_id, prompt)
 
     #    # Now fetch and append reference links for this prompt
     #     prompt_reference_links = st.session_state.get(f"reference_links_{prompt}", "")
