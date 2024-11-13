@@ -30,7 +30,7 @@ google_sheets_range_name = 'A1:C'
 
 st.set_page_config(page_title="Jibran Shahid CV")
 # Initialize OpenAI client
-api_key = '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'
+api_key = st.secrets["key_ai"]
 assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'
 client = OpenAI(api_key=api_key)
 pinecone_api_key = "1204fbe2-c36a-493d-956c-3f0a5ff27df4"
