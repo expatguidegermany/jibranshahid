@@ -51,7 +51,7 @@ class EventHandler(AssistantEventHandler):
 # and stream the response.
 
 # Define your Google Sheets' spreadsheet_id and range_name
-google_sheets_spreadsheet_id = '1nE8Mg0R3QX_GIZbYJv_3wSdZ6QsxJlMGfDaJ3t_IBgU'
+google_sheets_spreadsheet_id = '1ZHxf-bPuNLYU70qmkEBEheLAt-YTiqSVo0Jrmaf8BlI'
 google_sheets_range_name = 'A1:C'
 
 # Initialize the ExcelData class for Google Sheets
@@ -60,10 +60,10 @@ excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
 
 
 
-st.set_page_config(page_title="LiGa")
+st.set_page_config(page_title="Jibran Shahid - CV")
 # Initialize OpenAI client
 api_key = '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'
-assistant_id = 'asst_JIsVV46w0K0Eek12MpbDctvv'
+assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'
 client = OpenAI(api_key=api_key)
 pinecone_api_key = "1204fbe2-c36a-493d-956c-3f0a5ff27df4"
 pinecone_index_name = "gcp-starter"  # Replace with your Pinecone index name
@@ -161,7 +161,7 @@ def get_links(prompt):
         st.session_state[f"reference_links_{prompt}"] = reference_links
 
 # Display chatbot title
-st.markdown("LiGa (Expat Friendly Chatbot)")
+st.markdown("Ask me anything about me")
 
 # Initialize session state variables
 if "thread" not in st.session_state:
@@ -251,7 +251,7 @@ if "messages" in st.session_state and st.session_state.messages:
                 st.markdown(message_text)
 
 # Input for user prompt
-if prompt := st.chat_input("My name is LiGa (Live in Germany Assistant, How can I help you?"):
+if prompt := st.chat_input("My name is Jibran, What you want to know me?"):
     with st.chat_message('user'):
         st.markdown(prompt)
 
@@ -316,10 +316,10 @@ if prompt := st.chat_input("My name is LiGa (Live in Germany Assistant, How can 
         # Add the current timestamp and thread ID to the Google Sheets
         add_timestamp_and_thread_id_to_google_sheets(excel_data, thread_id, prompt)
 
-       # Now fetch and append reference links for this prompt
-        prompt_reference_links = st.session_state.get(f"reference_links_{prompt}", "")
-        if prompt_reference_links:
-            result += prompt_reference_links  # Append links to the assistant's response
+    #    # Now fetch and append reference links for this prompt
+    #     prompt_reference_links = st.session_state.get(f"reference_links_{prompt}", "")
+    #     if prompt_reference_links:
+    #         result += prompt_reference_links  # Append links to the assistant's response
 
 
         # Append assistant's full response to session state messages
