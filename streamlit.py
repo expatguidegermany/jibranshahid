@@ -19,18 +19,51 @@ import uuid
 import time
 
 from typing_extensions import override
+from openai import AssistantEventHandler
  
-
+# First, we create a EventHandler class to define
+# how we want to handle the events in the response stream.
+ 
+class EventHandler(AssistantEventHandler):    
+  @override
+  def on_text_created(self, text) -> None:
+    print(f"\nassistant > ", end="", flush=True)
+      
+  @override
+  def on_text_delta(self, delta, snapshot):
+    print(delta.value, end="", flush=True)
+      
+  def on_tool_call_created(self, tool_call):
+    print(f"\nassistant > {tool_call.type}\n", flush=True)
+  
+  def on_tool_call_delta(self, delta, snapshot):
+    if delta.type == 'code_interpreter':
+      if delta.code_interpreter.input:
+        print(delta.code_interpreter.input, end="", flush=True)
+      if delta.code_interpreter.outputs:
+        print(f"\n\noutput >", flush=True)
+        for output in delta.code_interpreter.outputs:
+          if output.type == "logs":
+            print(f"\n{output.logs}", flush=True)
+ 
 # Then, we use the `stream` SDK helper 
 # with the `EventHandler` class to create the Run 
 # and stream the response.
 
+# Define your Google Sheets' spreadsheet_id and range_name
+google_sheets_spreadsheet_id = '1nE8Mg0R3QX_GIZbYJv_3wSdZ6QsxJlMGfDaJ3t_IBgU'
+google_sheets_range_name = 'A1:C'
+
+# Initialize the ExcelData class for Google Sheets
+# excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
 
 
-st.set_page_config(page_title="JibranShahid Bot")
+
+
+st.set_page_config(page_title="LiGa")
 # Initialize OpenAI client
 api_key = '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'
-assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'
+assistant_id = 'asst_JIsVV46w0K0Eek12MpbDctvv'
 client = OpenAI(api_key=api_key)
 pinecone_api_key = "1204fbe2-c36a-493d-956c-3f0a5ff27df4"
 pinecone_index_name = "gcp-starter"  # Replace with your Pinecone index name
@@ -82,6 +115,21 @@ def add_hyperlinks(message):
     # Print the modified message
 
 
+# Function to add timestamp and thread ID to Google Sheets
+def add_timestamp_and_thread_id_to_google_sheets(excel_data, thread_id, prompt):
+
+    # Get the current timestamp
+    current_time = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Create a list with data to append to Google Sheets
+    data_to_append = [[current_time, thread_id, prompt]]
+
+    # Append the data to Google Sheets
+    # excel_data.append_values(google_sheets_spreadsheet_id, google_sheets_range_name, "USER_ENTERED", data_to_append)
+
+
+
+
 
 
 
@@ -113,7 +161,7 @@ def get_links(prompt):
         st.session_state[f"reference_links_{prompt}"] = reference_links
 
 # Display chatbot title
-st.markdown("Ask me anything about me")
+st.markdown("LiGa (Expat Friendly Chatbot)")
 
 # Initialize session state variables
 if "thread" not in st.session_state:
@@ -195,17 +243,14 @@ if "messages" in st.session_state and st.session_state.messages:
                 if message['role'] == "assistant" and "reference_links" in st.session_state:
                     references = st.session_state.get("reference_links", [])
                     #message_text = add_hyperlinks(message_text)
-                    if references:
-                        message_text += references
-                    #message_text = add_hyperlinks(message_text)
 
 
                 st.markdown(message_text)
 
-# Input for user prompt
-if prompt := st.chat_input("My name is Jibran, What you want to know me?"):
+# Chat input and message creation with file ID
+if prompt := st.chat_input("My name is LiGa (Live in Germany Assistant, How can I help you?"):
     with st.chat_message('user'):
-        st.markdown(prompt)
+        st.write(prompt)
 
     message_data = {
         "thread_id": st.session_state.thread.id,
@@ -213,68 +258,79 @@ if prompt := st.chat_input("My name is Jibran, What you want to know me?"):
         "content": prompt
     }
 
-    # Store the user's message
-    st.session_state.messages.append({"role": "user", "content": prompt})
-
-    # Get reference links based on user prompt
-    get_links(prompt)  # Call get_links to fetch references
-
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
 
-    # Start streaming the assistant's response
-    with st.chat_message("assistant"):
-        response_container = st.empty()  # Placeholder for assistant's response
-        stream = client.beta.threads.create_and_run(
-            assistant_id=assistant_id,
-            thread={"messages":[{"role": "user", "content": prompt}]},
-            stream=True,
-        )
+    # Store user message in the session state
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
-        response = ""
-        report = []
-        content_buffer = ""  # Buffer to collect chunks before displaying
+    # Check if there's already an active run
+    if st.session_state.get('run_active', False):
+        st.warning("There's already an active run for this thread. Please wait for it to finish.")
+        #return  # Exit if there's an active run
+
+    # Set the run_active state to True
+    st.session_state.run_active = True
+
+    # # Attempt to create a thread run
+    # try:
+    #     st.session_state.run = client.beta.threads.runs.create(
+    #         thread_id=st.session_state.thread.id,
+    #         assistant_id=st.session_state.assistant.id,
+    #     )
+    # except Exception as e:
+    #     st.error(f"Error creating thread run: {e}")
+    #     st.session_state.run_active = False  # Reset the run_active state on error
+    #     #return  # Exit if there's an error
+
+    # Streaming assistant's response using the EventHandler
+    response = ""
+    content_buffer = ""  # Buffer to collect chunks before displaying
+    response_container = st.empty()  # Placeholder for the assistant's response
+
+    with client.beta.threads.runs.stream(
+        thread_id=st.session_state.thread.id,
+        assistant_id=st.session_state.assistant.id,
+        instructions="Please address the user as Jane Doe. The user has a premium account.",
+        event_handler=EventHandler(),
+    ) as stream:
         for chunk in stream:
-            if chunk.data.object == "thread.message.delta":
             # Extract content from the chunk and ensure it’s not None
+            if hasattr(chunk.choices[0], 'delta') and hasattr(chunk.choices[0].delta, 'content'):
+                content = chunk.choices[0].delta.content
 
-                for content in chunk.data.delta.content:
-                    if content.type == "text":
-                        report.append(content.text.value)
-                        result = "".join(report).strip()
-                        response_container.markdown(f'{result}')
+                # Only concatenate if content is valid
+                if content is not None:
+                    content_buffer += content  # Add to buffer
+                    response += content_buffer  # Accumulate response
+                    response_container.markdown(response)  # Update the streamed content in real-time
 
-
+                    content_buffer = ""  # Clear buffer for next chunk
 
         # Display any remaining content in the buffer
         if content_buffer:
-            response += result
+            response += content_buffer
             response_container.markdown(response)
 
-            # Get reference links based on user prompt
-        get_links(prompt)  # Call get_links to fetch references
-
-        # Add reference links to the message
+        # Add reference links to the message if they exist
         if "reference_links" in st.session_state:
-            result = add_hyperlinks(result)
-         
-            print(result)
-            response_container.markdown(result)
+            response = add_hyperlinks(response)
+            response_container.markdown(response)
 
         # Upload the thread ID to Google Drive
         thread_id = st.session_state.thread.id
 
         # Add the current timestamp and thread ID to the Google Sheets
+        add_timestamp_and_thread_id_to_google_sheets(excel_data, thread_id, prompt)
 
-    #    # Now fetch and append reference links for this prompt
-    #     prompt_reference_links = st.session_state.get(f"reference_links_{prompt}", "")
-    #     if prompt_reference_links:
-    #         result += prompt_reference_links  # Append links to the assistant's response
-
+        # Now fetch and append reference links for this prompt
+        prompt_reference_links = st.session_state.get(f"reference_links_{prompt}", "")
+        if prompt_reference_links:
+            response += prompt_reference_links  # Append links to the assistant's response
 
         # Append assistant's full response to session state messages
-        st.session_state.messages.append({"role": "assistant", "content": result})
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
 
 
