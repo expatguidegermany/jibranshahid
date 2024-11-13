@@ -25,14 +25,6 @@ from typing_extensions import override
 # with the `EventHandler` class to create the Run 
 # and stream the response.
 
-# Define your Google Sheets' spreadsheet_id and range_name
-google_sheets_spreadsheet_id = '1nE8Mg0R3QX_GIZbYJv_3wSdZ6QsxJlMGfDaJ3t_IBgU'
-google_sheets_range_name = 'A1:C'
-
-# # Initialize the ExcelData class for Google Sheets
-# excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
-
-
 
 
 st.set_page_config(page_title="JibranShahid Bot")
