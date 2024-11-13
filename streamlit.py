@@ -63,7 +63,7 @@ google_sheets_range_name = 'A1:C'
 st.set_page_config(page_title="LiGa")
 # Initialize OpenAI client
 api_key = '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'
-assistant_id = 'asst_JIsVV46w0K0Eek12MpbDctvv'
+assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'
 client = OpenAI(api_key=api_key)
 pinecone_api_key = "1204fbe2-c36a-493d-956c-3f0a5ff27df4"
 pinecone_index_name = "gcp-starter"  # Replace with your Pinecone index name
