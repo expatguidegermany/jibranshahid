@@ -138,7 +138,7 @@ if "retry_error" not in st.session_state:
 if "assistant" not in st.session_state:
     client = openai.OpenAI(api_key=api_key)
     openai.api_key = api_key
-    st.session_state.assistant = openai.Assistant.retrieve(assistant_id)
+    st.session_state.assistant = openai.beta.assistants.retrieve(assistant_id)
     st.session_state.thread = client.beta.threads.create(
         metadata={'session_id': st.session_state.session_id}
     )
