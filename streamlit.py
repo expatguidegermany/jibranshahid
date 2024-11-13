@@ -19,39 +19,14 @@ import uuid
 import time
 
 from typing_extensions import override
-from openai import AssistantEventHandler
  
-# First, we create a EventHandler class to define
-# how we want to handle the events in the response stream.
- 
-class EventHandler(AssistantEventHandler):    
-  @override
-  def on_text_created(self, text) -> None:
-    print(f"\nassistant > ", end="", flush=True)
-      
-  @override
-  def on_text_delta(self, delta, snapshot):
-    print(delta.value, end="", flush=True)
-      
-  def on_tool_call_created(self, tool_call):
-    print(f"\nassistant > {tool_call.type}\n", flush=True)
-  
-  def on_tool_call_delta(self, delta, snapshot):
-    if delta.type == 'code_interpreter':
-      if delta.code_interpreter.input:
-        print(delta.code_interpreter.input, end="", flush=True)
-      if delta.code_interpreter.outputs:
-        print(f"\n\noutput >", flush=True)
-        for output in delta.code_interpreter.outputs:
-          if output.type == "logs":
-            print(f"\n{output.logs}", flush=True)
- 
+
 # Then, we use the `stream` SDK helper 
 # with the `EventHandler` class to create the Run 
 # and stream the response.
 
 # Define your Google Sheets' spreadsheet_id and range_name
-google_sheets_spreadsheet_id = '1ZHxf-bPuNLYU70qmkEBEheLAt-YTiqSVo0Jrmaf8BlI'
+google_sheets_spreadsheet_id = '1nE8Mg0R3QX_GIZbYJv_3wSdZ6QsxJlMGfDaJ3t_IBgU'
 google_sheets_range_name = 'A1:C'
 
 # Initialize the ExcelData class for Google Sheets
@@ -60,7 +35,7 @@ excel_data = ExcelData(google_sheets_spreadsheet_id, google_sheets_range_name)
 
 
 
-st.set_page_config(page_title="Jibran Shahid - CV")
+st.set_page_config(page_title="JibranShahid Bot")
 # Initialize OpenAI client
 api_key = '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'
 assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'

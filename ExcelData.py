@@ -24,7 +24,7 @@ class ExcelData:
     
     def read_google_sheet(self,spreadsheet_id, range_name):
         # Load credentials from the service account JSON file
-        creds = Credentials.from_service_account_file('liveingermany-1699367027361-3149fe002aa5.json')
+        creds = Credentials.from_service_account_file('liveingermany-1699367027361-afb06d5c87f2.json')
         
         # Create a service object for the API
         service = build('sheets', 'v4', credentials=creds)
