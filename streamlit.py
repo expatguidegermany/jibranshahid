@@ -30,11 +30,16 @@ google_sheets_range_name = 'A1:C'
 
 st.set_page_config(page_title="Jibran Shahid CV")
 # Initialize OpenAI client
+# Accessing OpenAI API key and assistant ID from secrets
 api_key = st.secrets["key_ai"]
-assistant_id = 'asst_mZ38ypNyQYszRyGQ6DMoDFbU'
+assistant_id = st.secrets["assistant_id"]
+
 client = OpenAI(api_key=api_key)
-pinecone_api_key = "1204fbe2-c36a-493d-956c-3f0a5ff27df4"
-pinecone_index_name = "gcp-starter"  # Replace with your Pinecone index name
+
+# Accessing Pinecone API details from secrets
+pinecone_api_key = st.secrets["pinecone_api_key"]
+pinecone_index_name = st.secrets["pinecone_index_name"]
+
 
 pc = Pinecone(
     api_key=pinecone_api_key
