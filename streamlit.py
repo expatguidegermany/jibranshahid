@@ -29,6 +29,14 @@ google_sheets_range_name = 'A1:C'
 
 
 st.set_page_config(page_title="Jibran Shahid CV")
+st.markdown("""Here are three intriguing questions to delve deeper into Jibran Shahid's professional profile:
+
+What are Jibran Shahid's key achievements in the field of AI?
+Can you describe a project Jibran worked on in the automotive industry that demonstrates his expertise in data analysis and technical skills?
+What future technologies is Jibran Shahid particularly interested in exploring or developing further?
+            
+            This bot is in its beta phase and may sometimes provide inaccurate responses. """)
+
 # Initialize OpenAI client
 # Accessing OpenAI API key and assistant ID from secrets
 api_key = st.secrets["key_ai"]
@@ -134,7 +142,6 @@ def get_links(prompt):
         st.session_state[f"reference_links_{prompt}"] = reference_links
 
 # Display chatbot title
-st.markdown("Ask me about Jibran Shahid")
 
 # Initialize session state variables
 if "thread" not in st.session_state:
